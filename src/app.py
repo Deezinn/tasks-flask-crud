@@ -50,7 +50,25 @@ def update_task(id):
     task.description = data.get('description', task.description)
     task.completed = data.get('completed', task.completed)
 
-    return jsonify({"Message": "Atualizado com sucesso", "task": task.to_dict()})  # Usando to_dict()
+    return jsonify({"Message": "Atualizado com sucesso", "task": task.to_dict()})
+
+
+@app.route('/tasks/<int:id>', methods=["DELETE"])
+def deleted_task(id):
+    task = None
+
+    for t in tasks:
+        print(t)
+        if t.id == id:
+            task = t
+            break
+
+    if not task:
+        return jsonify({"Message:": "Não foi possivel encontrar a atividade"}), 404
+
+    tasks.remove(task)
+    return jsonify({"Message:": "tarefa deletada com sucesso"})
+
 
 if __name__ == '__main__':
     app.run(debug=True)
