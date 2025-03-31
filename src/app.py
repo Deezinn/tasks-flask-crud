@@ -6,7 +6,7 @@ app = Flask(__name__)
 # CRUD -> CREATE, READ, UPDATE, DELETE
 
 tasks = []
-task_id_control = 1
+task_id_control = 0
 
 @app.route('/tasks', methods=['POST'])
 def create_task():
@@ -16,18 +16,23 @@ def create_task():
     task_id_control += 1
     tasks.append(new_task)
     task_data = vars(new_task)
-
     return jsonify({"Message": "Nova tarefa criada com sucesso", "task": task_data})
 
-
-
 @app.route('/tasks', methods=['GET'])
-def return_tasks():
-    task_list = []
-    for task in tasks:
-        task_list.append(task.to_dict())
-    return jsonify({"Message": "Todas as tarefas retornadas",
-                    "Tasks": task_list})
+def get_tasks():
+    task_list = [task.to_dict() for task in tasks]
+    output = {
+        "tasks": task_list,
+        "total_tasks": len(task_list)
+    }
+    return jsonify({"Message": "Todas as tarefas retornadas", "Tasks": output})
+
+@app.route('/tasks/<int:id>', methods=['GET'])
+def get_task_id(id):
+    for t in tasks:
+        if t.id == id:
+            return jsonify({"Message": "Tarefa retornada", "Task": t.to_dict()})
+    return jsonify({"Message": "Não foi possível encontrar a atividade"}), 404  # Agora está fora do for
 
 if __name__ == '__main__':
     app.run(debug=True)
